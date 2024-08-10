@@ -1,4 +1,4 @@
-package com.yuri.filgueira.login_app_api.securityJwt;
+package com.yuri.filgueira.login_app_api.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -97,9 +97,7 @@ public class JwtTokenProvider {
         var alg = Algorithm.HMAC256(secretKey.getBytes());
         JWTVerifier verifier = JWT.require(alg).build();
 
-        DecodedJWT decodedJWT = verifier.verify(token);
-
-        return decodedJWT;
+        return verifier.verify(token);
     }
 
     public String resolverToken(HttpServletRequest request) {
