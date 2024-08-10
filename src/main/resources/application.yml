@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: login_app_api
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/login_app_db
+    username: dev
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
