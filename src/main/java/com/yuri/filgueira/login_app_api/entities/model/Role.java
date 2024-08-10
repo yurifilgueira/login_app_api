@@ -1,4 +1,4 @@
-package com.yuri.filgueira.login_app_api.entities;
+package com.yuri.filgueira.login_app_api.entities.model;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
