@@ -32,15 +32,10 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder() {
         Map<String, PasswordEncoder> encoders = new HashMap<>();
 
-        Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = new Pbkdf2PasswordEncoder("", 8, 185000,
-                Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256
-        );
-        encoders.put("pbkf2", pbkdf2PasswordEncoder);
-
+        Pbkdf2PasswordEncoder pbkdf2Encoder = new Pbkdf2PasswordEncoder("", 8, 185000, Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256);
+        encoders.put("pbkdf2", pbkdf2Encoder);
         DelegatingPasswordEncoder passwordEncoder = new DelegatingPasswordEncoder("pbkdf2", encoders);
-
-        passwordEncoder.setDefaultPasswordEncoderForMatches(pbkdf2PasswordEncoder);
-
+        passwordEncoder.setDefaultPasswordEncoderForMatches(pbkdf2Encoder);
         return passwordEncoder;
     }
 
@@ -59,7 +54,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(
                         authorizeHttpRequest -> authorizeHttpRequest
                                 .requestMatchers("/auth/signin", "/auth/refresh/**").permitAll()
-
+                                .anyRequest().denyAll()
                 )
                 .cors(cors -> {})
                 .build();

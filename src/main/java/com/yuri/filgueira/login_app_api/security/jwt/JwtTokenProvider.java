@@ -22,7 +22,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.xml.crypto.Data;
 import java.util.Base64;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
+import java.util.List;
 
 @Service
 public class JwtTokenProvider {
@@ -44,7 +45,7 @@ public class JwtTokenProvider {
         algorithm = Algorithm.HMAC256(secretKey);
     }
 
-    public TokenVO createAccessToken(String username, Set<Role> roles) {
+    public TokenVO createAccessToken(String username, List<Role> roles) {
 
         final Date now = new Date();
         final Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -61,7 +62,7 @@ public class JwtTokenProvider {
         );
     }
 
-    private String getAccessToken(String username, Set<Role> roles, Date now, Date validity) {
+    private String getAccessToken(String username, List<Role> roles, Date now, Date validity) {
         String issuerUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
         return JWT.create()
@@ -74,7 +75,7 @@ public class JwtTokenProvider {
                 .strip();
     }
 
-    private String getRefreshToken(String username, Set<Role> roles, Date now) {
+    private String getRefreshToken(String username, List<Role> roles, Date now) {
         return JWT.create()
                 .withClaim("roles",  roles.stream().toList())
                 .withIssuedAt(now)
