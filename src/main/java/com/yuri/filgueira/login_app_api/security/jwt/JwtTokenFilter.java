@@ -39,7 +39,6 @@ public class JwtTokenFilter extends GenericFilterBean {
         } catch (InvalidJwtAuthenticationException e) {
             throw new RuntimeException(e);
         }
-
         filterChain.doFilter(servletRequest, servletResponse);
     }
 }
