@@ -41,8 +41,7 @@ public class User implements UserDetails,Serializable {
     public User() {
     }
 
-    public User(Long id, String name, String email, String password, Set<Role> roles) {
-        this.id = id;
+    public User(String name, String email, String password, Set<Role> roles) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -122,8 +121,8 @@ public class User implements UserDetails,Serializable {
         return enabled;
     }
 
-    public List<Role> getRoles() {
-        return List.copyOf(roles);
+    public List<String> getRoles() {
+        return List.copyOf(roles.stream().map(Object::toString).collect(Collectors.toList()));
     }
 
     @Override

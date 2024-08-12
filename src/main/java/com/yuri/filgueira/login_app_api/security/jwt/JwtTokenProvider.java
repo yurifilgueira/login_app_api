@@ -20,13 +20,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.xml.crypto.Data;
-import java.util.Base64;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.List;
+import java.util.logging.Logger;
 
 @Service
 public class JwtTokenProvider {
+
+    Logger logger = Logger.getLogger(JwtTokenProvider.class.getName());
 
     @Value(value = "${security.jwt.token.secret-key:secret}")
     private String secretKey = "secret";
@@ -45,7 +46,7 @@ public class JwtTokenProvider {
         algorithm = Algorithm.HMAC256(secretKey);
     }
 
-    public TokenVO createAccessToken(String username, List<Role> roles) {
+    public TokenVO createAccessToken(String username, List<String> roles) {
 
         final Date now = new Date();
         final Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -62,7 +63,7 @@ public class JwtTokenProvider {
         );
     }
 
-    private String getAccessToken(String username, List<Role> roles, Date now, Date validity) {
+    public String getAccessToken(String username, List<String> roles, Date now, Date validity) {
         String issuerUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
         return JWT.create()
@@ -75,7 +76,7 @@ public class JwtTokenProvider {
                 .strip();
     }
 
-    private String getRefreshToken(String username, List<Role> roles, Date now) {
+    public String getRefreshToken(String username, List<String> roles, Date now) {
         return JWT.create()
                 .withClaim("roles",  roles.stream().toList())
                 .withIssuedAt(now)
@@ -83,6 +84,22 @@ public class JwtTokenProvider {
                 .withSubject(username)
                 .sign(algorithm)
                 .strip();
+    }
+
+    public TokenVO refreshToken(String refreshToken) {
+
+        if (refreshToken.contains("Bearer ")) {
+            System.out.println("Refresh token: " + refreshToken);
+            refreshToken = refreshToken.replace("Bearer ", "");
+        }
+
+        System.out.println("Refresh token: " + refreshToken);
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJwt = verifier.verify(refreshToken);
+        String username = decodedJwt.getSubject();
+        List<String> roles = decodedJwt.getClaim("roles").asList(String.class);
+
+        return createAccessToken(username, roles);
     }
 
     public Authentication getAuthentication(String token) {
@@ -94,7 +111,7 @@ public class JwtTokenProvider {
 
     }
 
-    private DecodedJWT decodedJWT(String token) {
+    public DecodedJWT decodedJWT(String token) {
         var alg = Algorithm.HMAC256(secretKey.getBytes());
         JWTVerifier verifier = JWT.require(alg).build();
 

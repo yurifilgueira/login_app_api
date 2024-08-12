@@ -1,5 +1,6 @@
 package com.yuri.filgueira.login_app_api.config.security;
 
+
 import com.yuri.filgueira.login_app_api.security.jwt.JwtTokenFilter;
 import com.yuri.filgueira.login_app_api.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(
                         authorizeHttpRequest -> authorizeHttpRequest
-                                .requestMatchers("/auth/signin", "/auth/refresh/**").permitAll()
+                                .requestMatchers("/auth/signin", "/auth/register", "/auth/refresh/**").permitAll()
                                 .anyRequest().denyAll()
                 )
                 .cors(cors -> {})
