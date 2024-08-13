@@ -1,6 +1,7 @@
 package com.yuri.filgueira.login_app_api.controllers;
 
 import com.yuri.filgueira.login_app_api.entities.vos.AccountCredentialsVO;
+import com.yuri.filgueira.login_app_api.entities.vos.RefreshTokenVO;
 import com.yuri.filgueira.login_app_api.entities.vos.RegisterAccountCredentialsVO;
 import com.yuri.filgueira.login_app_api.repositories.UserRepository;
 import com.yuri.filgueira.login_app_api.services.AuthServices;
@@ -45,9 +46,14 @@ public class AuthController {
         return user;
     }
 
-    @PostMapping(value = "/refresh/{email}")
-    public ResponseEntity<?> register(@PathVariable("email") String email, @RequestHeader("Authorization") String refreshToken) {
-        var user = userRepository.findByEmail(email);
+    @PostMapping(value = "/refresh")
+    public ResponseEntity<?> register(@RequestBody RefreshTokenVO refreshTokenVO, @RequestHeader("Authorization") String refreshToken) {
+
+        if (refreshTokenVO == null || refreshTokenVO.email() == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
+        }
+
+        var user = userRepository.findByEmail(refreshTokenVO.email());
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
