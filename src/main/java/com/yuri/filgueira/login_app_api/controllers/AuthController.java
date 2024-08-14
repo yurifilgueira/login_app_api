@@ -2,10 +2,8 @@ package com.yuri.filgueira.login_app_api.controllers;
 
 import com.yuri.filgueira.login_app_api.entities.vos.AccountCredentialsVO;
 import com.yuri.filgueira.login_app_api.entities.vos.RefreshTokenVO;
-import com.yuri.filgueira.login_app_api.entities.vos.RegisterAccountCredentialsVO;
 import com.yuri.filgueira.login_app_api.repositories.UserRepository;
 import com.yuri.filgueira.login_app_api.services.AuthServices;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,19 +29,6 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
         }
         return token;
-    }
-
-    @PostMapping(value = "/register")
-    public ResponseEntity<?> register(@RequestBody RegisterAccountCredentialsVO data) {
-        if (dataIsNull(data)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
-        }
-
-        var user = authServices.register(data);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
-        }
-        return user;
     }
 
     @PostMapping(value = "/refresh")
@@ -74,16 +59,4 @@ public class AuthController {
 
         return false;
     }
-
-    private boolean dataIsNull(RegisterAccountCredentialsVO data) {
-
-        if (data == null) return true;
-        else if (data.name() == null || data.name().isEmpty()) return true;
-        else if (data.email() == null || data.email().isEmpty()) return true;
-        else if (data.password() == null || data.password().isEmpty()) return true;
-        else if (data.roles() == null || data.roles().isEmpty()) return true;
-
-        return false;
-    }
-
 }

@@ -2,6 +2,7 @@ package com.yuri.filgueira.login_app_api.exceptions.handler;
 
 import com.yuri.filgueira.login_app_api.exceptions.ExceptionResponse;
 import com.yuri.filgueira.login_app_api.exceptions.InvalidJwtAuthenticationException;
+import com.yuri.filgueira.login_app_api.exceptions.UserNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,5 +36,15 @@ public class CustomizedExceptionHandler extends ResponseEntityExceptionHandler {
                 request.getDescription(false));
 
         return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler({UserNotFoundException.class})
+    public final ResponseEntity<ExceptionResponse> handleUserNotFoundException(Exception ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 }

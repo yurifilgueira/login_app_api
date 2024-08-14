@@ -53,8 +53,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(
                         authorizeHttpRequest -> authorizeHttpRequest
-                                .requestMatchers("/auth/signin", "/auth/register", "/auth/refresh/**").permitAll()
-                                .anyRequest().denyAll()
+                                .requestMatchers("/auth/signin",
+                                        "/auth/register"
+                                        ,"/auth/refresh/**"
+                                        ,"/users/**").permitAll()
+                                .anyRequest().permitAll()
                 )
                 .cors(cors -> {})
                 .build();

@@ -1,24 +1,26 @@
 package com.yuri.filgueira.login_app_api.services;
 
+import com.yuri.filgueira.login_app_api.entities.vos.UserVO;
+import com.yuri.filgueira.login_app_api.exceptions.UserNotFoundException;
 import com.yuri.filgueira.login_app_api.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserServices implements UserDetailsService {
+public class UserServices {
 
     @Autowired
     private UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = userRepository.findByEmail(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(username);
-        }
-        return user;
+    public ResponseEntity<UserVO> findById(long id) {
+
+        var user =  userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        var userVO = new UserVO(user.getId(), user.getName(), user.getEmail());
+
+        return ResponseEntity.ok(userVO);
+
     }
+
 }

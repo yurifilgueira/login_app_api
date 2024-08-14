@@ -1,5 +1,6 @@
 package com.yuri.filgueira.login_app_api.entities.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,14 +28,19 @@ public class User implements UserDetails,Serializable {
     private String name;
     @Column(name = "email", unique = true, nullable = false)
     private String email;
+    @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
+    @JsonIgnore
     @Column(name = "accountNonExpired", nullable = false)
     private Boolean accountNonExpired;
+    @JsonIgnore
     @Column(name = "credentialsNonExpired", nullable = false)
     private Boolean credentialsNonExpired;
+    @JsonIgnore
     @Column(name = "accountNonLocked", nullable = false)
     private Boolean accountNonLocked;
+    @JsonIgnore
     @Column(name = "enabled", nullable = false)
     private Boolean enabled;
 
