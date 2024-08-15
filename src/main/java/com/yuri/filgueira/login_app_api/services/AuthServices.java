@@ -46,6 +46,7 @@ public class AuthServices {
 
             if (user != null) {
                 tokenResponse = jwtTokenProvider.createAccessToken(email, user.getRoles());
+                tokenResponse.setUserId(user.getId());
             }else {
                 throw new UsernameNotFoundException("Email " + email + " not found.");
             }
