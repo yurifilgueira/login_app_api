@@ -1,16 +1,16 @@
 security:
   jwt:
     token:
-      secret-key: 6954d5asd532rqff5atydfa
-      expire-length: 3600000
+      secret-key: ${SECRET_KEY}
+      expire-length: ${EXPIRE_LENGTH}
 spring:
   application:
     name: login_app_api
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/login_app_db
-    username: dev
-    password:
+    url: ${URL_DB}
+    username: ${USERNAME_DB}
+    password: ${PASSWORD_DB}
   jpa:
     hibernate:
       ddl-auto: update
