@@ -1,9 +1,7 @@
 package com.yuri.filgueira.login_app_api.services;
 
 import com.yuri.filgueira.login_app_api.entities.model.User;
-import com.yuri.filgueira.login_app_api.entities.vos.AccountCredentialsVO;
-import com.yuri.filgueira.login_app_api.entities.vos.RegisterAccountCredentialsVO;
-import com.yuri.filgueira.login_app_api.entities.vos.TokenVO;
+import com.yuri.filgueira.login_app_api.entities.vos.*;
 import com.yuri.filgueira.login_app_api.repositories.UserRepository;
 import com.yuri.filgueira.login_app_api.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,25 +31,36 @@ public class AuthServices {
     private UserRepository userRepository;
     private Logger logger = Logger.getLogger(AuthServices.class.getName());
 
-    public ResponseEntity<TokenVO> signin(AccountCredentialsVO data) {
+    public ResponseEntity<LoginResponseVO> signin(AccountCredentialsVO data) {
         try {
             var email = data.email();
             var password = data.password();
 
-            logger.info("Email: " + email);
-            logger.info("Password: " + password);
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
             var user = userRepository.findByEmail(email);
-            var tokenResponse = new TokenVO();
+            var tokenVO = new TokenVO();
+            var loginResponseVO = new LoginResponseVO();
 
             if (user != null) {
-                tokenResponse = jwtTokenProvider.createAccessToken(email, user.getRoles());
-                tokenResponse.setUserId(user.getId());
+
+                UserVO userVO = new UserVO();
+                userVO.setId(user.getId());
+                userVO.setEmail(user.getEmail());
+                userVO.setName(user.getName());
+
+                tokenVO = jwtTokenProvider.createAccessToken(email, user.getRoles());
+                tokenVO.setUserId(user.getId());
+                loginResponseVO = new LoginResponseVO(
+                        userVO,
+                        tokenVO.getAccessToken(),
+                        tokenVO.getRefreshToken(),
+                        tokenVO.getExpiration(),
+                        tokenVO.getRefreshTokenExpiration());
             }else {
                 throw new UsernameNotFoundException("Email " + email + " not found.");
             }
 
-            return ResponseEntity.ok(tokenResponse);
+            return ResponseEntity.ok(loginResponseVO);
         }catch (Exception e) {
             throw new BadCredentialsException("Invalid email or password.");
         }

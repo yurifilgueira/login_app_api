@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "roles")
-public class Role implements GrantedAuthority,Serializable {
+public class Role implements GrantedAuthority, Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -17,6 +17,7 @@ public class Role implements GrantedAuthority,Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Enumerated(EnumType.STRING)
     private RoleName name;
 
@@ -26,6 +27,10 @@ public class Role implements GrantedAuthority,Serializable {
     public Role(Long id, RoleName name) {
         this.id = id;
         this.name = name;
+    }
+
+    public Role(String name) {
+        this.name = RoleName.valueOf(name);
     }
 
     public Long getId() {

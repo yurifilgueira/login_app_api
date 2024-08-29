@@ -11,17 +11,19 @@ public class TokenVO {
     private Date expiration;
     private String accessToken;
     private String refreshToken;
+    private Date refreshTokenExpiration;
 
     public TokenVO() {
     }
 
-    public TokenVO(String username, Boolean authenticated, Date created, Date expiration, String accessToken, String refreshToken) {
+    public TokenVO(String username, Boolean authenticated, Date created, Date expiration, String accessToken, String refreshToken, Date refreshTokenExpiration) {
         this.username = username;
         this.authenticated = authenticated;
         this.created = created;
         this.expiration = expiration;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+        this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
     public Long getUserId() {
@@ -78,5 +80,13 @@ public class TokenVO {
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public Date getRefreshTokenExpiration() {
+        return refreshTokenExpiration;
+    }
+
+    public void setRefreshTokenExpiration(Date refreshTokenExpiration) {
+        this.refreshTokenExpiration = refreshTokenExpiration;
     }
 }

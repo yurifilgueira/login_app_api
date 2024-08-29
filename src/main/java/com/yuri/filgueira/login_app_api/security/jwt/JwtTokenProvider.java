@@ -50,8 +50,9 @@ public class JwtTokenProvider {
 
         final Date now = new Date();
         final Date validity = new Date(now.getTime() + validityInMilliseconds);
+        final Date refreshTokenExpiration = new Date(now.getTime() + (validityInMilliseconds  * 3));
         final String accessToken = getAccessToken(username, roles, now, validity);
-        final String refreshToken = getRefreshToken(username, roles, now);
+        final String refreshToken = getRefreshToken(username, roles, now, refreshTokenExpiration);
 
         return new TokenVO(
                 username,
@@ -59,7 +60,8 @@ public class JwtTokenProvider {
                 now,
                 validity,
                 accessToken,
-                refreshToken
+                refreshToken,
+                refreshTokenExpiration
         );
     }
 
@@ -76,11 +78,11 @@ public class JwtTokenProvider {
                 .strip();
     }
 
-    public String getRefreshToken(String username, List<String> roles, Date now) {
+    public String getRefreshToken(String username, List<String> roles, Date now, Date refreshTokenExpiration) {
         return JWT.create()
                 .withClaim("roles",  roles.stream().toList())
                 .withIssuedAt(now)
-                .withExpiresAt(new Date(now.getTime() + (validityInMilliseconds  * 3)))
+                .withExpiresAt(refreshTokenExpiration)
                 .withSubject(username)
                 .sign(algorithm)
                 .strip();
@@ -133,9 +135,8 @@ public class JwtTokenProvider {
         DecodedJWT decodedJWT = decodedJWT(token);
         try {
             return !decodedJWT.getExpiresAt().before(new Date());
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new InvalidJwtAuthenticationException("Expired or invalid JWT token!");
         }
     }
-
 }

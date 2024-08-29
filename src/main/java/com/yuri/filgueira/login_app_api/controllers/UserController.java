@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.util.Objects;
+
 @RestController
 @RequestMapping(value = "/users")
 @CrossOrigin(origins = "*")
@@ -37,7 +40,8 @@ public class UserController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
         }
-        return user;
+        return ResponseEntity.created(URI.create("/users/" + Objects.requireNonNull(user.getBody()).getId()))
+                .body("User registered successfully!");
     }
 
     private boolean dataIsNull(RegisterAccountCredentialsVO data) {

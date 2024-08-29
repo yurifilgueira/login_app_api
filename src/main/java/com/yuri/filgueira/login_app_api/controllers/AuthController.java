@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     @Autowired
@@ -24,11 +25,11 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
         }
 
-        var token = authServices.signin(data);
-        if (token == null) {
+        var loginResponseVO = authServices.signin(data);
+        if (loginResponseVO == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
         }
-        return token;
+        return loginResponseVO;
     }
 
     @PostMapping(value = "/refresh")
