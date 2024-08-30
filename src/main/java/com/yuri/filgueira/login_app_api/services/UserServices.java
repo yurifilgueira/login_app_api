@@ -1,5 +1,6 @@
 package com.yuri.filgueira.login_app_api.services;
 
+import com.yuri.filgueira.login_app_api.entities.vos.RequestUpdateUserVO;
 import com.yuri.filgueira.login_app_api.entities.vos.UserVO;
 import com.yuri.filgueira.login_app_api.exceptions.UserNotFoundException;
 import com.yuri.filgueira.login_app_api.repositories.UserRepository;
@@ -23,4 +24,15 @@ public class UserServices {
 
     }
 
+    public ResponseEntity<?> update(RequestUpdateUserVO data) {
+        var user =  userRepository.findById(data.id()).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        user.setName(data.name());
+        user.setEmail(data.email());
+        user.setPassword(data.newPassword());
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok().build();
+    }
 }

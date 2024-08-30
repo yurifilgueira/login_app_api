@@ -46,16 +46,16 @@ public class JwtTokenProvider {
         algorithm = Algorithm.HMAC256(secretKey);
     }
 
-    public TokenVO createAccessToken(String username, List<String> roles) {
+    public TokenVO createAccessToken(String email, List<String> roles) {
 
         final Date now = new Date();
         final Date validity = new Date(now.getTime() + validityInMilliseconds);
         final Date refreshTokenExpiration = new Date(now.getTime() + (validityInMilliseconds  * 3));
-        final String accessToken = getAccessToken(username, roles, now, validity);
-        final String refreshToken = getRefreshToken(username, roles, now, refreshTokenExpiration);
+        final String accessToken = getAccessToken(email, roles, now, validity);
+        final String refreshToken = getRefreshToken(email, roles, now, refreshTokenExpiration);
 
         return new TokenVO(
-                username,
+                email,
                 true,
                 now,
                 validity,
@@ -65,25 +65,25 @@ public class JwtTokenProvider {
         );
     }
 
-    public String getAccessToken(String username, List<String> roles, Date now, Date validity) {
+    public String getAccessToken(String email, List<String> roles, Date now, Date validity) {
         String issuerUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
         return JWT.create()
                 .withClaim("roles",  roles.stream().toList())
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
-                .withSubject(username)
+                .withSubject(email)
                 .withIssuer(issuerUrl)
                 .sign(algorithm)
                 .strip();
     }
 
-    public String getRefreshToken(String username, List<String> roles, Date now, Date refreshTokenExpiration) {
+    public String getRefreshToken(String email, List<String> roles, Date now, Date refreshTokenExpiration) {
         return JWT.create()
                 .withClaim("roles",  roles.stream().toList())
                 .withIssuedAt(now)
                 .withExpiresAt(refreshTokenExpiration)
-                .withSubject(username)
+                .withSubject(email)
                 .sign(algorithm)
                 .strip();
     }
@@ -95,13 +95,12 @@ public class JwtTokenProvider {
             refreshToken = refreshToken.replace("Bearer ", "");
         }
 
-        System.out.println("Refresh token: " + refreshToken);
         JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT decodedJwt = verifier.verify(refreshToken);
-        String username = decodedJwt.getSubject();
+        String email = decodedJwt.getSubject();
         List<String> roles = decodedJwt.getClaim("roles").asList(String.class);
 
-        return createAccessToken(username, roles);
+        return createAccessToken(email, roles);
     }
 
     public Authentication getAuthentication(String token) {

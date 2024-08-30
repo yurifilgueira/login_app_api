@@ -83,14 +83,10 @@ public class AuthServices {
         var user = userRepository.save(new User(name, email, password, roles));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
-
     }
 
     public ResponseEntity<TokenVO> refreshToken(String refreshToken) {
-
         var token = jwtTokenProvider.refreshToken(refreshToken);
-
         return ResponseEntity.ok(token);
-
     }
 }
