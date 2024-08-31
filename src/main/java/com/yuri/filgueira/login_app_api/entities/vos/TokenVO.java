@@ -4,7 +4,6 @@ import java.util.Date;
 
 public class TokenVO {
 
-    private Long userId;
     private String username;
     private Boolean authenticated;
     private Date created;
@@ -24,14 +23,6 @@ public class TokenVO {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.refreshTokenExpiration = refreshTokenExpiration;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     public String getUsername() {

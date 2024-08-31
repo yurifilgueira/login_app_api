@@ -4,6 +4,7 @@ import com.yuri.filgueira.login_app_api.entities.model.User;
 import com.yuri.filgueira.login_app_api.entities.vos.*;
 import com.yuri.filgueira.login_app_api.repositories.UserRepository;
 import com.yuri.filgueira.login_app_api.security.jwt.JwtTokenProvider;
+import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,11 +46,10 @@ public class AuthServices {
 
                 UserVO userVO = new UserVO();
                 userVO.setId(user.getId());
-                userVO.setEmail(user.getEmail());
+                userVO.setEmail(user.getUsername());
                 userVO.setName(user.getName());
 
                 tokenVO = jwtTokenProvider.createAccessToken(email, user.getRoles());
-                tokenVO.setUserId(user.getId());
                 loginResponseVO = new LoginResponseVO(
                         userVO,
                         tokenVO.getAccessToken(),
@@ -68,16 +68,9 @@ public class AuthServices {
 
     public ResponseEntity<User> register(RegisterAccountCredentialsVO data) {
 
-        Map<String, PasswordEncoder> encoders = new HashMap<>();
-
-        Pbkdf2PasswordEncoder pbkdf2Encoder = new Pbkdf2PasswordEncoder("", 8, 185000, Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256);
-        encoders.put("pbkdf2", pbkdf2Encoder);
-        DelegatingPasswordEncoder passwordEncoder = new DelegatingPasswordEncoder("pbkdf2", encoders);
-        passwordEncoder.setDefaultPasswordEncoderForMatches(pbkdf2Encoder);
-
         var name = data.name();
         var email = data.email();
-        var password = passwordEncoder.encode(data.password());
+        var password = encodePassword(data.password());
         var roles = data.roles();
 
         var user = userRepository.save(new User(name, email, password, roles));
@@ -88,5 +81,17 @@ public class AuthServices {
     public ResponseEntity<TokenVO> refreshToken(String refreshToken) {
         var token = jwtTokenProvider.refreshToken(refreshToken);
         return ResponseEntity.ok(token);
+    }
+
+    public String encodePassword(String password) {
+
+        Map<String, PasswordEncoder> encoders = new HashMap<>();
+
+        Pbkdf2PasswordEncoder pbkdf2Encoder = new Pbkdf2PasswordEncoder("", 8, 185000, Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256);
+        encoders.put("pbkdf2", pbkdf2Encoder);
+        DelegatingPasswordEncoder passwordEncoder = new DelegatingPasswordEncoder("pbkdf2", encoders);
+        passwordEncoder.setDefaultPasswordEncoderForMatches(pbkdf2Encoder);
+
+        return passwordEncoder.encode(password);
     }
 }

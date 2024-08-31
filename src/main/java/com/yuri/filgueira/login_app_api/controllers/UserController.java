@@ -1,10 +1,12 @@
 package com.yuri.filgueira.login_app_api.controllers;
 
 import com.yuri.filgueira.login_app_api.entities.vos.RegisterAccountCredentialsVO;
+import com.yuri.filgueira.login_app_api.entities.vos.UpdateUserRequestVO;
 import com.yuri.filgueira.login_app_api.entities.vos.UserVO;
 import com.yuri.filgueira.login_app_api.repositories.UserRepository;
 import com.yuri.filgueira.login_app_api.services.AuthServices;
 import com.yuri.filgueira.login_app_api.services.UserServices;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +46,18 @@ public class UserController {
                 .body("User registered successfully!");
     }
 
+    @Transactional
+    @PutMapping
+    public ResponseEntity<?> update(@RequestBody UpdateUserRequestVO data) {
+        if (dataIsNull(data)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
+        }
+
+        var updateUserInfoResponse = userServices.update(data);
+        return Objects.requireNonNullElseGet(updateUserInfoResponse, () -> ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!"));
+
+    }
+
     private boolean dataIsNull(RegisterAccountCredentialsVO data) {
 
         if (data == null) return true;
@@ -53,5 +67,17 @@ public class UserController {
         else if (data.roles() == null || data.roles().isEmpty()) return true;
 
         return false;
+    }
+
+    private boolean dataIsNull(UpdateUserRequestVO data) {
+
+        if (data == null) return true;
+        else if (data.id() == null) return true;
+        else if (data.name() != null && !data.name().isEmpty()) return false;
+        else if (data.email() != null && !data.email().isEmpty()) return false;
+        else if (data.newPassword() != null && !data.newPassword().isEmpty()) return false;
+        else if (data.confirmNewPassword() != null && !data.confirmNewPassword().isEmpty()) return false;
+
+        return true;
     }
 }
