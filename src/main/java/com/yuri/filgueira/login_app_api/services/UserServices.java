@@ -21,8 +21,6 @@ public class UserServices {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
     private JwtTokenProvider jwtTokenProvider;
     @Autowired
     private AuthServices authServices;
