@@ -7,6 +7,7 @@ import com.yuri.filgueira.login_app_api.services.AuthServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,11 +26,15 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
         }
 
-        var loginResponseVO = authServices.signin(data);
-        if (loginResponseVO == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
+        try {
+            var loginResponseVO = authServices.signin(data);
+            if (loginResponseVO == null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
+            }
+            return loginResponseVO;
+        }catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
-        return loginResponseVO;
     }
 
     @PostMapping(value = "/refresh")
