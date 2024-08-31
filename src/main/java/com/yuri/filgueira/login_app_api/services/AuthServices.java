@@ -43,19 +43,13 @@ public class AuthServices {
             var loginResponseVO = new LoginResponseVO();
 
             if (user != null) {
-
                 UserVO userVO = new UserVO();
                 userVO.setId(user.getId());
                 userVO.setEmail(user.getUsername());
                 userVO.setName(user.getName());
 
                 tokenVO = jwtTokenProvider.createAccessToken(email, user.getRoles());
-                loginResponseVO = new LoginResponseVO(
-                        userVO,
-                        tokenVO.getAccessToken(),
-                        tokenVO.getRefreshToken(),
-                        tokenVO.getExpiration(),
-                        tokenVO.getRefreshTokenExpiration());
+                loginResponseVO = generateLoginResponseVO(userVO, tokenVO);
             }else {
                 throw new UsernameNotFoundException("Email " + email + " not found.");
             }
@@ -93,5 +87,16 @@ public class AuthServices {
         passwordEncoder.setDefaultPasswordEncoderForMatches(pbkdf2Encoder);
 
         return passwordEncoder.encode(password);
+    }
+
+    public LoginResponseVO generateLoginResponseVO(UserVO userVO, TokenVO tokenVO) {
+        LoginResponseVO loginResponseVO = new LoginResponseVO(
+                userVO,
+                tokenVO.getAccessToken(),
+                tokenVO.getRefreshToken(),
+                tokenVO.getExpiration(),
+                tokenVO.getRefreshTokenExpiration());
+
+        return loginResponseVO;
     }
 }

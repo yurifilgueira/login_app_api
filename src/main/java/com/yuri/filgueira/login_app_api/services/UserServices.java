@@ -61,12 +61,7 @@ public class UserServices {
             userVO.setName(user.getName());
 
             tokenVO = jwtTokenProvider.createAccessToken(user.getUsername(), user.getRoles());
-            loginResponseVO = new LoginResponseVO(
-                    userVO,
-                    tokenVO.getAccessToken(),
-                    tokenVO.getRefreshToken(),
-                    tokenVO.getExpiration(),
-                    tokenVO.getRefreshTokenExpiration());
+            loginResponseVO = authServices.generateLoginResponseVO(userVO, tokenVO);
 
             return ResponseEntity.ok().body(loginResponseVO);
         } catch (Exception e) {
